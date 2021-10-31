@@ -8,7 +8,7 @@ namespace Data
 {
     public enum PieceColor
     {
-        W = 0,
-        B
+        White = 0,
+        Black
     }
 }

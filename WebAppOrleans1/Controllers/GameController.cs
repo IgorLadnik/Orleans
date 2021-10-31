@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Orleans;
 using GrainInterfaces;
 using Grains;
+using Data;
 
 namespace WebAppOrleans1.Controllers
 {
@@ -30,8 +31,25 @@ namespace WebAppOrleans1.Controllers
             var qa = await test.GetTestIntProp();
 
             var game = _grainFactory.GetGrain<IGameGrain>(_gameGuid);
+            var br = await game.Start();
+            var gameId = game.GetPrimaryKey();
 
-            return Json(qa);
+            return Json($"{br} {qa}");
+        }
+
+        [HttpGet("{locations}")]
+        public async Task<IActionResult> Move(string locations)
+        {
+            if (string.IsNullOrEmpty(locations))
+                return Json(false);
+
+            var ss = locations.Split('-');
+
+            var game = _grainFactory.GetGrain<IGameGrain>(_gameGuid);
+            var piece = await game.Move(new PieceLocation(ss[0]), new PieceLocation(ss[1]));
+            return Json(piece != null 
+                ? $"{await piece.GetRank()}, {await piece.GetColor()}, {await piece.GetLocation()}"
+                : "Wrong move");
         }
     }
 }

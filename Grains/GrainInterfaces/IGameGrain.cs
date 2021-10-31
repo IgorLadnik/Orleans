@@ -1,4 +1,5 @@
-﻿using Orleans;
+﻿using Data;
+using Orleans;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace GrainInterfaces
     {
         Task<bool> Start();
 
-        Task<IEnumerable<Guid>> GetPieceIds();
-        Task SetPieceIds(IEnumerable<Guid> guids);
+        Task<IList<Guid>> GetPieceIds();
+        Task<IPieceGrain> Move(PieceLocation from, PieceLocation to);
     }
 }

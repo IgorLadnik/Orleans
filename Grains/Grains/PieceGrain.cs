@@ -9,26 +9,24 @@ namespace Grains
 {
     public class PieceGrain : Grain, IPieceGrain
     {
-        //private Guid _id;
-        //public Task<Guid> GameId
-        //{
-        //    get => Task.Run(() => _id);
-        //    set => Task.Run(() => _id = value.Result);
-        //}
+        // GameId
+        private Guid _gameId = Guid.Empty;
+        public Task<Guid> GetGameId() => Task.Run(() => _gameId);
+        public Task SetGameId(Guid gameId) => Task.Run(() => _gameId = gameId);
 
-        //private PieceColor _color;
-        //public Task<PieceColor> Color
-        //{
-        //    get => Task.Run(() => _color);
-        //    set => Task.Run(() => _color = value.Result);
-        //}
+        // Rank
+        private PieceRank _rank;
+        public Task<PieceRank> GetRank() => Task.Run(() => _rank);
+        public Task SetRank(PieceRank rank) => Task.Run(() => _rank = rank);
 
-        //public PieceRank Rank { get; set; }
-        //public PieceLocation Location { get; set; }
+        // Color
+        private PieceColor _color;
+        public Task<PieceColor> GetColor() => Task.Run(() => _color);
+        public Task SetColor(PieceColor color) => Task.Run(() => _color = color);
 
-        public Task<bool> Move(PieceLocation newLocation)
-        {
-            return Task.Run(() => true);
-        }
+        // Location
+        private PieceLocation _location;
+        public Task<PieceLocation> GetLocation() => Task.Run(() => _location);
+        public Task SetLocation(PieceLocation location) => Task.Run(() => _location = location);
     }
 }

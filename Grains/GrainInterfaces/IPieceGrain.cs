@@ -7,12 +7,20 @@ namespace GrainInterfaces
 {
     public interface IPieceGrain : IGrainWithGuidKey
     {
-        //Task<Guid> GameId { get; set; }
+        // GameId
+        Task<Guid> GetGameId();
+        Task SetGameId(Guid gameId);
 
-        //Task<PieceColor> Color { get; set; }
-        //Task<PieceRank> Rank { get; set; }
-        //Task<PieceLocation> Location { get; set; }
+        // Rank
+        Task<PieceRank> GetRank();
+        Task SetRank(PieceRank rank);
 
-        Task<bool> Move(PieceLocation newLocation);
+        // Color
+        Task<PieceColor> GetColor();
+        Task SetColor(PieceColor color);
+
+        // Location
+        Task<PieceLocation> GetLocation();
+        Task SetLocation(PieceLocation location);
     }
 }
