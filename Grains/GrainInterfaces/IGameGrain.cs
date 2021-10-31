@@ -9,8 +9,9 @@ namespace GrainInterfaces
 {
     public interface IGameGrain : IGrainWithGuidKey
     {
-        bool Start();
+        Task<bool> Start();
 
-        IEnumerable<Guid> Pieces { get; }
+        Task<IEnumerable<Guid>> GetPieceIds();
+        Task SetPieceIds(IEnumerable<Guid> guids);
     }
 }

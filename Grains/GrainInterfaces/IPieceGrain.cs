@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Data;
 using Orleans;
 
@@ -6,12 +7,12 @@ namespace GrainInterfaces
 {
     public interface IPieceGrain : IGrainWithGuidKey
     {
-        Guid GameId { get; set; }
-        
-        PieceColor Color { get; set; }
-        PieceRank Rank { get; set; }
-        PieceLocation Location { get; set; }
+        //Task<Guid> GameId { get; set; }
 
-        bool Move(PieceLocation newLocation);
+        //Task<PieceColor> Color { get; set; }
+        //Task<PieceRank> Rank { get; set; }
+        //Task<PieceLocation> Location { get; set; }
+
+        Task<bool> Move(PieceLocation newLocation);
     }
 }

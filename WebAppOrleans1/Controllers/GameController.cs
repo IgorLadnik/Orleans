@@ -13,6 +13,7 @@ namespace WebAppOrleans1.Controllers
     [Controller]
     public class GameController : Controller
     {
+        private readonly Guid _testGuid = Guid.Parse("5B4DFADE-D577-4DA8-96FA-AA8AAA4BD0F2");
         private readonly Guid _gameGuid = Guid.Parse("778DA50A-B632-475C-8A3F-8D510310518E"); 
 
         private readonly IGrainFactory _grainFactory;
@@ -24,16 +25,13 @@ namespace WebAppOrleans1.Controllers
         [HttpGet("start")]
         public async Task<IActionResult> Start()
         {
-            var test = _grainFactory.GetGrain<ITestGrain>(_gameGuid);
-            var result = await test.Ga(5);
+            var test = _grainFactory.GetGrain<ITestGrain>(_testGuid);
+            await test.SetTestIntProp(7);
+            var qa = await test.GetTestIntProp();
 
-            //var game = _grainFactory.GetGrain<IGameGrain>(_gameGuid);
+            var game = _grainFactory.GetGrain<IGameGrain>(_gameGuid);
 
-
-            //var gameIdTask = await player.CreateGame();
-            //return Json(new { GameId = gameIdTask });
-            //return Json(new { GameId = gameIdTask });
-            return Json(result);
+            return Json(qa);
         }
     }
 }
