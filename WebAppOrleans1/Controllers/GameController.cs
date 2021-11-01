@@ -49,7 +49,7 @@ namespace WebAppOrleans1.Controllers
             var piece = await Game.Move(new PieceLocation(ss[0]), new PieceLocation(ss[1]));
             await Consumer.BecomeConsumer(_streamGuid, "SMSProvider");
 
-            await Provider.SendEvent(new MoveEvent { Prop = 17 });
+            await Provider.SendEvent(new PieceEvent1 { Payload = "Sho?" });
 
             return Json(piece != null 
                 ? $"{await piece.GetRank()}, {await piece.GetColor()}, {await piece.GetLocation()}"

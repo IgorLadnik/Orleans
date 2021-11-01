@@ -16,8 +16,7 @@ namespace Grains
 
         private IGrainFactory _grainFactory;
 
-        //private IAsyncObserver<int> _producer;
-        private IAsyncObserver<object> _producer;
+        private IAsyncObserver<IPieceEvent> _producer;
         private int _numProducedItems;
         //private ILogger _logger;
 
@@ -76,7 +75,7 @@ namespace Grains
             }
 
             var provider = GetStreamProvider(providerToUse);
-            _producer = provider.GetStream<object>(streamId, StreamNamespace);
+            _producer = provider.GetStream<IPieceEvent>(streamId, StreamNamespace);
             return Task.CompletedTask;
         }
 
@@ -85,7 +84,7 @@ namespace Grains
             return Task.FromResult(_numProducedItems);
         }
 
-        public async Task SendEvent(object ob)
+        public async Task SendEvent(IPieceEvent @event)
         {
             //_logger.Info("Producer.SendEvent called");
             if (_producer == null)
@@ -93,8 +92,7 @@ namespace Grains
                 throw new ApplicationException("Not yet a producer on a stream.  Must call BecomeProducer first.");
             }
 
-            //await _producer.OnNextAsync(_numProducedItems + 1);
-            await _producer.OnNextAsync(ob);
+            await _producer.OnNextAsync(@event);
 
             // update after send in case of error
             _numProducedItems++;
@@ -122,5 +120,10 @@ namespace Grains
 
         private bool ValidateMove(IPieceGrain piece, PieceLocation to) => 
             piece != null;
+
+        //public Task SendEvent<T>(IPieceEvent<T> @event)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }
