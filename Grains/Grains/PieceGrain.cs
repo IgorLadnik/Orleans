@@ -13,8 +13,8 @@ namespace Grains
     {
         private int _numConsumedItems;
         //private ILogger _logger;
-        private IAsyncObservable<int> _consumer; //stream
-        private StreamSubscriptionHandle<int> _subscriptionHandle;
+        private IAsyncObservable<object> _consumer; //stream
+        private StreamSubscriptionHandle<object> _subscriptionHandle;
         internal const string StreamNamespace = "HaloStreamingNamespace";
 
         #region Implementation of IPieceGrain
@@ -73,8 +73,8 @@ namespace Grains
             }
 
             var streamProvider = GetStreamProvider(providerToUse);
-            _consumer = streamProvider.GetStream<int>(streamId, StreamNamespace);
-            _subscriptionHandle = await _consumer.SubscribeAsync(new AsyncObserver<int>(EventArrived));
+            _consumer = streamProvider.GetStream<object>(streamId, StreamNamespace);
+            _subscriptionHandle = await _consumer.SubscribeAsync(new AsyncObserver<object>(EventArrived));
         }
 
         public async Task StopConsuming()
@@ -95,7 +95,7 @@ namespace Grains
 
         #endregion // Implementation of IConsumerEventCountingGrain
 
-        private Task EventArrived(int evt)
+        private Task EventArrived(object ob)
         {
             _numConsumedItems++;
             //_logger.Info("Consumer.EventArrived. NumConsumed so far: " + _numConsumedItems);

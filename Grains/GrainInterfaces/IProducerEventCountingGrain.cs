@@ -15,7 +15,7 @@ namespace GrainInterfaces
         /// Sends a single event and, upon successful completion, updates the number of events produced.
         /// </summary>
         /// <returns></returns>
-        Task SendEvent();
+        Task SendEvent(object ob);
 
         Task<int> GetNumberProduced();
     }
