@@ -1,6 +1,10 @@
+using Data;
+using GrainInterfaces;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Orleans;
 using Orleans.Hosting;
+using Orleans.Runtime;
 
 namespace WebApplication1
 {
@@ -16,6 +20,26 @@ namespace WebApplication1
                 .UseOrleans((ctx, siloBuilder) =>
                 {
                     siloBuilder.UseLocalhostClustering();
+
+                    siloBuilder.AddIncomingGrainCallFilter(async context =>
+                    {
+                        // If the method being called is 'Move', then set a value
+                        // on the RequestContext which can then be read by other filters or the grain.
+                        if (context.InterfaceMethod.Name == nameof(IGameGrain.Move))
+                        {
+                            //(context.Grain as Grain).GrainReference.GetPrimaryKey
+                            RequestContext.Set("intercepted value", "this value was added by the filter");
+                        }
+
+                        await context.Invoke();
+
+
+                        //Task < IPieceGrain >
+
+                        // If the grain method returned an int, set the result to double that value.
+                        if (context.Result is IPieceGrain piece) 
+                            /*context.Result = */await piece.SetLocation(new("Z8")); // :)
+                    });
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
@@ -23,3 +47,19 @@ namespace WebApplication1
                 });
     }
 }
+
+
+//siloHostBuilder.AddIncomingGrainCallFilter(async context =>
+//{
+//    // If the method being called is 'MyInterceptedMethod', then set a value
+//    // on the RequestContext which can then be read by other filters or the grain.
+//    if (string.Equals(context.InterfaceMethod.Name, nameof(IMyGrain.MyInterceptedMethod)))
+//    {
+//        RequestContext.Set("intercepted value", "this value was added by the filter");
+//    }
+
+//    await context.Invoke();
+
+//    // If the grain method returned an int, set the result to double that value.
+//    if (context.Result is int resultValue) context.Result = resultValue * 2;
+//});
