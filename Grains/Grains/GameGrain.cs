@@ -1,19 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using Orleans;
-using Orleans.Providers;
 using GrainInterfaces;
 using System.Threading.Tasks;
-using Data;
 using System.Linq;
+using Orleans;
+using Orleans.Streams;
+using Orleans.Providers;
+using Data;
 
 namespace Grains
 {
-    public class GameGrain : Grain, IGameGrain
+    public class GameGrain : Grain, IGameGrain, IProducerEventCountingGrain
     {
         private IList<Guid> _pieceIds = new List<Guid>();
 
         private IGrainFactory _grainFactory;
+
+        private IAsyncObserver<int> _producer;
+        private int _numProducedItems;
+        //private ILogger _logger;
+
+        internal const string StreamNamespace = "HaloStreamingNamespace";
 
         public GameGrain(IGrainFactory grainFactory) =>
             _grainFactory = grainFactory;
@@ -52,6 +59,47 @@ namespace Grains
             });
 
         #endregion // Implementation of IGrainGrain
+
+        #region Implementation of IProducerEventCountingGrain
+
+        public Task BecomeProducer(Guid streamId, string providerToUse)
+        {
+            //_logger.Info("Producer.BecomeProducer");
+            if (streamId == Guid.Empty)
+            {
+                throw new ArgumentNullException("streamId");
+            }
+            if (string.IsNullOrEmpty(providerToUse))
+            {
+                throw new ArgumentNullException("providerToUse");
+            }
+
+            var provider = GetStreamProvider(providerToUse);
+            _producer = provider.GetStream<int>(streamId, StreamNamespace);
+            return Task.CompletedTask;
+        }
+
+        public Task<int> GetNumberProduced()
+        {
+            return Task.FromResult(_numProducedItems);
+        }
+
+        public async Task SendEvent()
+        {
+            //_logger.Info("Producer.SendEvent called");
+            if (_producer == null)
+            {
+                throw new ApplicationException("Not yet a producer on a stream.  Must call BecomeProducer first.");
+            }
+
+            await _producer.OnNextAsync(_numProducedItems + 1);
+
+            // update after send in case of error
+            _numProducedItems++;
+            //_logger.Info("Producer.SendEvent - TotalSent: ({0})", _numProducedItems);
+        }
+
+        #endregion // Implementation of IProducerEventCountingGrain
 
         #region OnActivateAsync & OnDeactivateAsync
 

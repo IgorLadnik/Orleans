@@ -4,11 +4,19 @@ using Orleans;
 using Orleans.Providers;
 using GrainInterfaces;
 using Data;
+using Orleans.Streams;
+using Infrastructure;
 
 namespace Grains
 {
-    public class PieceGrain : Grain, IPieceGrain
+    public class PieceGrain : Grain, IPieceGrain, IConsumerEventCountingGrain
     {
+        private int _numConsumedItems;
+        //private ILogger _logger;
+        private IAsyncObservable<int> _consumer; //stream
+        private StreamSubscriptionHandle<int> _subscriptionHandle;
+        internal const string StreamNamespace = "HaloStreamingNamespace";
+
         #region Implementation of IPieceGrain
 
         // GameId
@@ -49,5 +57,49 @@ namespace Grains
         }
 
         #endregion // OnActivateAsync & OnDeactivateAsync
+
+        #region Implementation of IConsumerEventCountingGrain
+
+        public async Task BecomeConsumer(Guid streamId, string providerToUse)
+        {
+            //_logger.Info("Consumer.BecomeConsumer");
+            if (streamId == Guid.Empty)
+            {
+                throw new ArgumentNullException("streamId");
+            }
+            if (string.IsNullOrEmpty(providerToUse))
+            {
+                throw new ArgumentNullException("providerToUse");
+            }
+
+            var streamProvider = GetStreamProvider(providerToUse);
+            _consumer = streamProvider.GetStream<int>(streamId, StreamNamespace);
+            _subscriptionHandle = await _consumer.SubscribeAsync(new AsyncObserver<int>(EventArrived));
+        }
+
+        public async Task StopConsuming()
+        {
+            //_logger.Info("Consumer.StopConsuming");
+            if (_subscriptionHandle != null && _consumer != null)
+            {
+                await _subscriptionHandle.UnsubscribeAsync();
+                _subscriptionHandle = null;
+                _consumer = null;
+            }
+        }
+
+        public Task<int> GetNumberConsumed()
+        {
+            return Task.FromResult(_numConsumedItems);
+        }
+
+        #endregion // Implementation of IConsumerEventCountingGrain
+
+        private Task EventArrived(int evt)
+        {
+            _numConsumedItems++;
+            //_logger.Info("Consumer.EventArrived. NumConsumed so far: " + _numConsumedItems);
+            return Task.CompletedTask;
+        }
     }
 }

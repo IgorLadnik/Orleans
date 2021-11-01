@@ -15,7 +15,9 @@ namespace WebAppOrleans1.Controllers
     public class GameController : Controller
     {
         private readonly Guid _testGuid = Guid.Parse("5B4DFADE-D577-4DA8-96FA-AA8AAA4BD0F2");
-        private readonly Guid _gameGuid = Guid.Parse("778DA50A-B632-475C-8A3F-8D510310518E"); 
+        private readonly Guid _gameGuid = Guid.Parse("778DA50A-B632-475C-8A3F-8D510310518E");
+
+        private readonly Guid _streamGuid = Guid.Parse("CFAEFEAD-FB3C-4478-98CB-92900CDCE4E3");
 
         private readonly IGrainFactory _grainFactory;
 
@@ -30,9 +32,8 @@ namespace WebAppOrleans1.Controllers
             await test.SetTestIntProp(7);
             var qa = await test.GetTestIntProp();
 
-            var game = _grainFactory.GetGrain<IGameGrain>(_gameGuid);
-            var br = await game.Start();
-            var gameId = game.GetPrimaryKey();
+            var br = await Game.Start();
+            await Provider.BecomeProducer(_streamGuid, "SMSProvider");
 
             return Json($"{br} {qa}");
         }
@@ -45,11 +46,23 @@ namespace WebAppOrleans1.Controllers
 
             var ss = locations.Split('-');
 
-            var game = _grainFactory.GetGrain<IGameGrain>(_gameGuid);
-            var piece = await game.Move(new PieceLocation(ss[0]), new PieceLocation(ss[1]));
+            var piece = await Game.Move(new PieceLocation(ss[0]), new PieceLocation(ss[1]));
+            await Consumer.BecomeConsumer(_streamGuid, "SMSProvider");
+
+            await Provider.SendEvent();
+
             return Json(piece != null 
                 ? $"{await piece.GetRank()}, {await piece.GetColor()}, {await piece.GetLocation()}"
                 : "Wrong move");
         }
+
+        private IGameGrain Game =>
+            _grainFactory.GetGrain<IGameGrain>(_gameGuid);
+
+        private IProducerEventCountingGrain Provider =>
+            _grainFactory.GetGrain<IProducerEventCountingGrain>(_gameGuid);
+
+        private IConsumerEventCountingGrain Consumer =>
+            _grainFactory.GetGrain<IConsumerEventCountingGrain>(_gameGuid);
     }
 }
