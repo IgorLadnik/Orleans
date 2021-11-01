@@ -17,10 +17,12 @@ namespace Grains
         private IGrainFactory _grainFactory;
 
         private IAsyncObserver<IPieceEvent> _producer;
-        private int _numProducedItems;
+        //private int _numProducedItems;
         //private ILogger _logger;
 
         internal const string StreamNamespace = "HaloStreamingNamespace";
+        private bool _isAlreadyProducer = false;
+
 
         public GameGrain(IGrainFactory grainFactory) =>
             _grainFactory = grainFactory;
@@ -64,6 +66,9 @@ namespace Grains
 
         public Task BecomeProducer(Guid streamId, string providerToUse)
         {
+            if (_isAlreadyProducer)
+                return Task.CompletedTask;
+
             //_logger.Info("Producer.BecomeProducer");
             if (streamId == Guid.Empty)
             {
@@ -76,13 +81,15 @@ namespace Grains
 
             var provider = GetStreamProvider(providerToUse);
             _producer = provider.GetStream<IPieceEvent>(streamId, StreamNamespace);
+
+            _isAlreadyProducer = true;
             return Task.CompletedTask;
         }
 
-        public Task<int> GetNumberProduced()
-        {
-            return Task.FromResult(_numProducedItems);
-        }
+        //public Task<int> GetNumberProduced()
+        //{
+        //    return Task.FromResult(_numProducedItems);
+        //}
 
         public async Task SendEvent(IPieceEvent @event)
         {
@@ -95,7 +102,7 @@ namespace Grains
             await _producer.OnNextAsync(@event);
 
             // update after send in case of error
-            _numProducedItems++;
+            //_numProducedItems++;
             //_logger.Info("Producer.SendEvent - TotalSent: ({0})", _numProducedItems);
         }
 

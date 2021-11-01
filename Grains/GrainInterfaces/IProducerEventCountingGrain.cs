@@ -18,6 +18,6 @@ namespace GrainInterfaces
         /// <returns></returns>
         Task SendEvent(IPieceEvent @event);
 
-        Task<int> GetNumberProduced();
+        //Task<int> GetNumberProduced();
     }
 }

@@ -36,7 +36,7 @@ namespace WebApplication1
                             // If the grain method returned an int, set the result to double that value.
                             if (context.Result is IPieceGrain piece)
                                 /*context.Result = */
-                                await piece.SetLocation(new("Z8")); // :)
+                                await piece.SetLocation(new("e8")); // :)
                         })
                         .AddMemoryGrainStorage("PubSubStore"/*, options => options.NumStorageGrains = 1*/)
                         .AddSimpleMessageStreamProvider("SMSProvider");

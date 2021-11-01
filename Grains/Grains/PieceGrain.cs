@@ -11,11 +11,12 @@ namespace Grains
 {
     public class PieceGrain : Grain, IPieceGrain, IConsumerEventCountingGrain
     {
-        private int _numConsumedItems;
+        //private int _numConsumedItems;
         //private ILogger _logger;
         private IAsyncObservable<IPieceEvent> _consumer; //stream
         private StreamSubscriptionHandle<IPieceEvent> _subscriptionHandle;
         internal const string StreamNamespace = "HaloStreamingNamespace";
+        private bool _isAlreadyConsumer = false;
 
         #region Implementation of IPieceGrain
 
@@ -62,6 +63,9 @@ namespace Grains
 
         public async Task BecomeConsumer(Guid streamId, string providerToUse)
         {
+            if (_isAlreadyConsumer)
+                return;
+
             //_logger.Info("Consumer.BecomeConsumer");
             if (streamId == Guid.Empty)
             {
@@ -75,6 +79,8 @@ namespace Grains
             var streamProvider = GetStreamProvider(providerToUse);
             _consumer = streamProvider.GetStream<IPieceEvent>(streamId, StreamNamespace);
             _subscriptionHandle = await _consumer.SubscribeAsync(new AsyncObserver<IPieceEvent>(EventArrived));
+
+            _isAlreadyConsumer = true;
         }
 
         public async Task StopConsuming()
@@ -88,16 +94,16 @@ namespace Grains
             }
         }
 
-        public Task<int> GetNumberConsumed()
-        {
-            return Task.FromResult(_numConsumedItems);
-        }
+        //public Task<int> GetNumberConsumed()
+        //{
+        //    return Task.FromResult(_numConsumedItems);
+        //}
 
         #endregion // Implementation of IConsumerEventCountingGrain
 
         private Task EventArrived(IPieceEvent @event)
         {
-            _numConsumedItems++;
+            //_numConsumedItems++;
             //_logger.Info("Consumer.EventArrived. NumConsumed so far: " + _numConsumedItems);
             return Task.CompletedTask;
         }
