@@ -18,6 +18,8 @@ namespace Grains
         public GameGrain(IGrainFactory grainFactory) =>
             _grainFactory = grainFactory;
 
+        #region Implementation of IGrainGrain
+
         public Task<IList<Guid>> GetPieceIds() => Task.Run(() => _pieceIds);
 
         public Task<bool> Start() =>
@@ -48,6 +50,25 @@ namespace Grains
 
                 return br ? piece : null;       
             });
+
+        #endregion // Implementation of IGrainGrain
+
+        #region OnActivateAsync & OnDeactivateAsync
+
+        public override Task OnActivateAsync()
+        {
+            //_logger.Info("Consumer.OnActivateAsync");
+            return base.OnActivateAsync();
+        }
+
+        public override async Task OnDeactivateAsync()
+        {
+            //_logger.Info("Consumer.OnDeactivateAsync");
+            //await StopConsuming();
+            await base.OnDeactivateAsync();
+        }
+
+        #endregion // OnActivateAsync & OnDeactivateAsync
 
         private bool ValidateMove(IPieceGrain piece, PieceLocation to) => 
             piece != null;

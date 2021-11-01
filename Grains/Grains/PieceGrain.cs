@@ -9,6 +9,8 @@ namespace Grains
 {
     public class PieceGrain : Grain, IPieceGrain
     {
+        #region Implementation of IPieceGrain
+
         // GameId
         private Guid _gameId = Guid.Empty;
         public Task<Guid> GetGameId() => Task.Run(() => _gameId);
@@ -28,5 +30,24 @@ namespace Grains
         private PieceLocation _location;
         public Task<PieceLocation> GetLocation() => Task.Run(() => _location);
         public Task SetLocation(PieceLocation location) => Task.Run(() => _location = location);
+
+        #endregion // Implementation of IPieceGrain
+
+        #region OnActivateAsync & OnDeactivateAsync
+
+        public override Task OnActivateAsync()
+        {
+            //_logger.Info("Consumer.OnActivateAsync");
+            return base.OnActivateAsync();
+        }
+
+        public override async Task OnDeactivateAsync()
+        {
+            //_logger.Info("Consumer.OnDeactivateAsync");
+            //await StopConsuming();
+            await base.OnDeactivateAsync();
+        }
+
+        #endregion // OnActivateAsync & OnDeactivateAsync
     }
 }
