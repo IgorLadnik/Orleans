@@ -7,6 +7,7 @@ using Orleans;
 using GrainInterfaces;
 using Grains;
 using Data;
+using WebApplication1;
 
 namespace WebAppOrleans1.Controllers
 {
@@ -14,11 +15,6 @@ namespace WebAppOrleans1.Controllers
     [Controller]
     public class GameController : Controller
     {
-        private readonly Guid _testGuid = Guid.Parse("5B4DFADE-D577-4DA8-96FA-AA8AAA4BD0F2");
-        private readonly Guid _gameGuid = Guid.Parse("778DA50A-B632-475C-8A3F-8D510310518E");
-
-        private readonly Guid _streamGuid = Guid.Parse("CFAEFEAD-FB3C-4478-98CB-92900CDCE4E3");
-
         private readonly IGrainFactory _grainFactory;
 
         public GameController(IGrainFactory grainFactory) => 
@@ -28,12 +24,12 @@ namespace WebAppOrleans1.Controllers
         [HttpGet("start")]
         public async Task<IActionResult> Start()
         {
-            var test = _grainFactory.GetGrain<ITestGrain>(_testGuid);
+            var test = _grainFactory.GetGrain<ITestGrain>(GrainIds.TestGrainId);
             await test.SetTestIntProp(7);
             var qa = await test.GetTestIntProp();
 
             var br = await Game.Start();
-            await Provider.BecomeProducer(_streamGuid, "SMSProvider");
+            await Provider.BecomeProducer(GrainIds.StreamId, Program.ProviderName);
 
             return Json($"{br} {qa}");
         }
@@ -47,7 +43,7 @@ namespace WebAppOrleans1.Controllers
             var ss = locations.Split('-');
 
             var piece = await Game.Move(new PieceLocation(ss[0]), new PieceLocation(ss[1]));
-            await Consumer.BecomeConsumer(_streamGuid, "SMSProvider");
+            await Consumer.BecomeConsumer(GrainIds.StreamId, Program.ProviderName);
 
             await Provider.SendEvent(new PieceEvent1 { Payload = "Sho?" });
 
@@ -57,12 +53,12 @@ namespace WebAppOrleans1.Controllers
         }
 
         private IGameGrain Game =>
-            _grainFactory.GetGrain<IGameGrain>(_gameGuid);
+            _grainFactory.GetGrain<IGameGrain>(GrainIds.GameGrainId);
 
         private IProducerEventCountingGrain Provider =>
-            _grainFactory.GetGrain<IProducerEventCountingGrain>(_gameGuid);
+            _grainFactory.GetGrain<IProducerEventCountingGrain>(GrainIds.GameGrainId);
 
         private IConsumerEventCountingGrain Consumer =>
-            _grainFactory.GetGrain<IConsumerEventCountingGrain>(_gameGuid);
+            _grainFactory.GetGrain<IConsumerEventCountingGrain>(GrainIds.GameGrainId);
     }
 }

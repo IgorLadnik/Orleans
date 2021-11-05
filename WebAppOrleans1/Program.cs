@@ -1,15 +1,18 @@
-using Data;
-using GrainInterfaces;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Orleans;
 using Orleans.Hosting;
 using Orleans.Runtime;
+using GrainInterfaces;
+using Data;
 
 namespace WebApplication1
 {
     public class Program
     {
+        public const string StoreName = "PubSubStore";
+        public const string ProviderName = "SMSProvider";
+
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
@@ -38,8 +41,8 @@ namespace WebApplication1
                                 /*context.Result = */
                                 await piece.SetLocation(new("e8")); // :)
                         })
-                        .AddMemoryGrainStorage("PubSubStore"/*, options => options.NumStorageGrains = 1*/)
-                        .AddSimpleMessageStreamProvider("SMSProvider");
+                        .AddMemoryGrainStorage(StoreName/*, options => options.NumStorageGrains = 1*/)
+                        .AddSimpleMessageStreamProvider(ProviderName);
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
