@@ -15,7 +15,7 @@ namespace Grains
         //private ILogger _logger;
         private IAsyncObservable<IPieceEvent> _consumer; //stream
         private StreamSubscriptionHandle<IPieceEvent> _subscriptionHandle;
-        internal const string StreamNamespace = "HaloStreamingNamespace";
+        //internal const string StreamNamespace = "HaloStreamingNamespace";
         private bool _isAlreadyConsumer = false;
 
         #region Implementation of IPieceGrain
@@ -77,7 +77,7 @@ namespace Grains
             }
 
             var streamProvider = GetStreamProvider(providerToUse);
-            _consumer = streamProvider.GetStream<IPieceEvent>(streamId, StreamNamespace);
+            _consumer = streamProvider.GetStream<IPieceEvent>(streamId, GrainIds.StreamNamespace);
             _subscriptionHandle = await _consumer.SubscribeAsync(new AsyncObserver<IPieceEvent>(EventArrived));
 
             _isAlreadyConsumer = true;

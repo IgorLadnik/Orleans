@@ -12,5 +12,7 @@ namespace Grains
         public static readonly Guid GameGrainId = Guid.Parse("778DA50A-B632-475C-8A3F-8D510310518E");
 
         public static readonly Guid StreamId = Guid.Parse("CFAEFEAD-FB3C-4478-98CB-92900CDCE4E3");
+
+        internal const string StreamNamespace = "HaloStreamingNamespace";
     }
 }
