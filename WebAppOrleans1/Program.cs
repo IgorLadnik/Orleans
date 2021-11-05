@@ -10,7 +10,7 @@ namespace WebApplication1
 {
     public class Program
     {
-        public const string StoreName = "PubSubStore";
+        public const string StoreName = "PubSubStore"; // Reserved name for streaming!
         public const string ProviderName = "SMSProvider";
 
         public static void Main(string[] args)
@@ -24,6 +24,9 @@ namespace WebApplication1
                 {
                     siloBuilder
                         .UseLocalhostClustering()
+                        .AddMemoryGrainStorage(StoreName/*, options => options.NumStorageGrains = 1*/)
+                        .AddMemoryGrainStorageAsDefault()
+                        .AddSimpleMessageStreamProvider(ProviderName)
                         .AddIncomingGrainCallFilter(async context =>
                         {
                             // If the method being called is 'Move', then set a value
@@ -40,9 +43,7 @@ namespace WebApplication1
                             if (context.Result is IPieceGrain piece)
                                 /*context.Result = */
                                 await piece.SetLocation(new("e8")); // :)
-                        })
-                        .AddMemoryGrainStorage(StoreName/*, options => options.NumStorageGrains = 1*/)
-                        .AddSimpleMessageStreamProvider(ProviderName);
+                        });
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

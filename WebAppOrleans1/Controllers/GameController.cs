@@ -31,6 +31,9 @@ namespace WebAppOrleans1.Controllers
             var br = await Game.Start();
             await Provider.BecomeProducer(GrainIds.StreamId, Program.ProviderName);
 
+            // Device
+            await Device.Act(11);
+
             return Json($"{br} {qa}");
         }
 
@@ -39,6 +42,9 @@ namespace WebAppOrleans1.Controllers
         {
             if (string.IsNullOrEmpty(locations))
                 return Json(false);
+
+            // Device
+            var deviceState = await Device.GetState();
 
             var ss = locations.Split('-');
 
@@ -51,6 +57,9 @@ namespace WebAppOrleans1.Controllers
                 ? $"{await piece.GetRank()}, {await piece.GetColor()}, {await piece.GetLocation()}"
                 : "Wrong move");
         }
+
+        private IDeviceGrain Device =>
+            _grainFactory.GetGrain<IDeviceGrain>(GrainIds.DeviceGrainId);
 
         private IGameGrain Game =>
             _grainFactory.GetGrain<IGameGrain>(GrainIds.GameGrainId);

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Orleans;
-using Orleans.Providers;
-using GrainInterfaces;
-using Data;
 using Orleans.Streams;
 using Infrastructure;
+using GrainInterfaces;
+using Data;
 
 namespace Grains
 {
@@ -15,7 +14,6 @@ namespace Grains
         //private ILogger _logger;
         private IAsyncObservable<IPieceEvent> _consumer; //stream
         private StreamSubscriptionHandle<IPieceEvent> _subscriptionHandle;
-        //internal const string StreamNamespace = "HaloStreamingNamespace";
         private bool _isAlreadyConsumer = false;
 
         #region Implementation of IPieceGrain

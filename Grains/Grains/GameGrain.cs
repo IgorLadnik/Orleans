@@ -20,7 +20,6 @@ namespace Grains
         //private int _numProducedItems;
         //private ILogger _logger;
 
-        internal const string StreamNamespace = "HaloStreamingNamespace";
         private bool _isAlreadyProducer = false;
 
 
@@ -80,7 +79,7 @@ namespace Grains
             }
 
             var provider = GetStreamProvider(providerToUse);
-            _producer = provider.GetStream<IPieceEvent>(streamId, StreamNamespace);
+            _producer = provider.GetStream<IPieceEvent>(streamId, GrainIds.StreamNamespace);
 
             _isAlreadyProducer = true;
             return Task.CompletedTask;
