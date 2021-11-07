@@ -13,6 +13,6 @@ namespace GrainInterfaces
 
         Task StopConsuming();
 
-        //Task<int> GetNumberConsumed();
+        Task<int> GetNumberConsumed();
     }
 }

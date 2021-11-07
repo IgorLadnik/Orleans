@@ -17,7 +17,7 @@ namespace Grains
         private IGrainFactory _grainFactory;
 
         private IAsyncObserver<IPieceEvent> _producer;
-        //private int _numProducedItems;
+        private int _numProducedItems;
         //private ILogger _logger;
 
         private bool _isAlreadyProducer = false;
@@ -85,10 +85,8 @@ namespace Grains
             return Task.CompletedTask;
         }
 
-        //public Task<int> GetNumberProduced()
-        //{
-        //    return Task.FromResult(_numProducedItems);
-        //}
+        public Task<int> GetNumberProduced() =>
+            Task.FromResult(_numProducedItems);
 
         public async Task SendEvent(IPieceEvent @event)
         {
@@ -101,7 +99,7 @@ namespace Grains
             await _producer.OnNextAsync(@event);
 
             // update after send in case of error
-            //_numProducedItems++;
+            _numProducedItems++;
             //_logger.Info("Producer.SendEvent - TotalSent: ({0})", _numProducedItems);
         }
 

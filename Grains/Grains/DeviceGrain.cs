@@ -8,10 +8,9 @@ namespace Grains
 {
     public class DeviceGrain : JournaledGrain<DeviceState, DeviceEvent>, IDeviceGrain
     {
-        public DeviceGrain()
-        {
-
-        }
+        //public DeviceGrain()
+        //{
+        //}
 
         public Task Act(int n) =>
             Task.Run(() =>

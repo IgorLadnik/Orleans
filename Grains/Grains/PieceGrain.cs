@@ -2,16 +2,17 @@
 using System.Threading.Tasks;
 using Orleans;
 using Orleans.Streams;
+using Orleans.Runtime;
 using Infrastructure;
 using GrainInterfaces;
 using Data;
 
 namespace Grains
 {
-    public class PieceGrain : Grain, IPieceGrain, IConsumerEventCountingGrain
+    public class PieceGrain : Grain, IPieceGrain, IConsumerEventCountingGrain, IRemindable
     {
-        //private int _numConsumedItems;
         //private ILogger _logger;
+        private int _numConsumedItems;
         private IAsyncObservable<IPieceEvent> _consumer; //stream
         private StreamSubscriptionHandle<IPieceEvent> _subscriptionHandle;
         private bool _isAlreadyConsumer = false;
@@ -78,6 +79,9 @@ namespace Grains
             _consumer = streamProvider.GetStream<IPieceEvent>(streamId, GrainIds.StreamNamespace);
             _subscriptionHandle = await _consumer.SubscribeAsync(new AsyncObserver<IPieceEvent>(EventArrived));
 
+            // Reminder
+            var grainReminder = await RegisterOrUpdateReminder("game-reminder", TimeSpan.Zero, TimeSpan.FromMinutes(1));
+
             _isAlreadyConsumer = true;
         }
 
@@ -92,17 +96,22 @@ namespace Grains
             }
         }
 
-        //public Task<int> GetNumberConsumed()
-        //{
-        //    return Task.FromResult(_numConsumedItems);
-        //}
+        public Task<int> GetNumberConsumed() =>
+            Task.FromResult(_numConsumedItems);
 
         #endregion // Implementation of IConsumerEventCountingGrain
 
         private Task EventArrived(IPieceEvent @event)
         {
-            //_numConsumedItems++;
+            _numConsumedItems++;
             //_logger.Info("Consumer.EventArrived. NumConsumed so far: " + _numConsumedItems);
+            return Task.CompletedTask;
+        }
+
+        // Reminder
+        public Task ReceiveReminder(string reminderName, TickStatus status)
+        {
+            Console.WriteLine("Thanks for reminding me -- I almost forgot!");
             return Task.CompletedTask;
         }
     }

@@ -24,6 +24,7 @@ namespace WebApplication1
                 {
                     siloBuilder
                         .UseLocalhostClustering()
+                        .UseInMemoryReminderService()
                         .AddMemoryGrainStorage(StoreName/*, options => options.NumStorageGrains = 1*/)
                         .AddMemoryGrainStorageAsDefault()
                         .AddSimpleMessageStreamProvider(ProviderName)
