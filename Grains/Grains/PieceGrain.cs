@@ -9,13 +9,9 @@ using Data;
 
 namespace Grains
 {
-    public class PieceGrain : Grain, IPieceGrain, IConsumerEventCountingGrain, IRemindable
+    public class PieceGrain : ConsumerGrain<IPieceEvent>, IPieceGrain, /*IConsumerEventCountingGrain,*/ IRemindable
     {
         //private ILogger _logger;
-        private int _numConsumedItems;
-        private IAsyncObservable<IPieceEvent> _consumer; //stream
-        private StreamSubscriptionHandle<IPieceEvent> _subscriptionHandle;
-        private bool _isAlreadyConsumer = false;
 
         #region Implementation of IPieceGrain
 
@@ -46,64 +42,28 @@ namespace Grains
         public override Task OnActivateAsync()
         {
             //_logger.Info("Consumer.OnActivateAsync");
+            
+            // Reminder
+            var grainReminder = RegisterOrUpdateReminder("game-reminder", TimeSpan.Zero, TimeSpan.FromMinutes(1)).Result;
+
             return base.OnActivateAsync();
         }
 
         public override async Task OnDeactivateAsync()
         {
             //_logger.Info("Consumer.OnDeactivateAsync");
-            //await StopConsuming();
+            
+            await StopConsuming();
             await base.OnDeactivateAsync();
         }
 
         #endregion // OnActivateAsync & OnDeactivateAsync
 
-        #region Implementation of IConsumerEventCountingGrain
-
-        public async Task BecomeConsumer(Guid streamId, string providerToUse)
-        {
-            if (_isAlreadyConsumer)
-                return;
-
-            //_logger.Info("Consumer.BecomeConsumer");
-            if (streamId == Guid.Empty)
-            {
-                throw new ArgumentNullException("streamId");
-            }
-            if (string.IsNullOrEmpty(providerToUse))
-            {
-                throw new ArgumentNullException("providerToUse");
-            }
-
-            var streamProvider = GetStreamProvider(providerToUse);
-            _consumer = streamProvider.GetStream<IPieceEvent>(streamId, GrainIds.StreamNamespace);
-            _subscriptionHandle = await _consumer.SubscribeAsync(new AsyncObserver<IPieceEvent>(EventArrived));
-
-            // Reminder
-            var grainReminder = await RegisterOrUpdateReminder("game-reminder", TimeSpan.Zero, TimeSpan.FromMinutes(1));
-
-            _isAlreadyConsumer = true;
-        }
-
-        public async Task StopConsuming()
-        {
-            //_logger.Info("Consumer.StopConsuming");
-            if (_subscriptionHandle != null && _consumer != null)
-            {
-                await _subscriptionHandle.UnsubscribeAsync();
-                _subscriptionHandle = null;
-                _consumer = null;
-            }
-        }
-
-        public Task<int> GetNumberConsumed() =>
-            Task.FromResult(_numConsumedItems);
-
-        #endregion // Implementation of IConsumerEventCountingGrain
+        public override async Task BecomeConsumer(Guid streamId, string providerToUse, string streamNamespace, Func<IPieceEvent, Task> processEvent) =>
+            await base.BecomeConsumer(streamId, providerToUse, streamNamespace, processEvent ?? EventArrived);
 
         private Task EventArrived(IPieceEvent @event)
         {
-            _numConsumedItems++;
             //_logger.Info("Consumer.EventArrived. NumConsumed so far: " + _numConsumedItems);
             return Task.CompletedTask;
         }

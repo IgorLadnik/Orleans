@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Orleans;
+﻿using Orleans;
 using GrainInterfaces;
+using Infrastructure;
+using Data;
 
 namespace Grains
 {
@@ -27,8 +24,8 @@ namespace Grains
         public IProducerEventCountingGrain Provider =>
             _grainFactory.GetGrain<IProducerEventCountingGrain>(GrainIds.GameGrainId);
 
-        public IConsumerEventCountingGrain Consumer =>
-            _grainFactory.GetGrain<IConsumerEventCountingGrain>(GrainIds.GameGrainId);
+        public IConsumerGrain<IPieceEvent> Consumer =>
+            _grainFactory.GetGrain<IConsumerGrain<IPieceEvent>>(GrainIds.GameGrainId);
 
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Data;
 using Orleans;
+using Data;
 
 namespace GrainInterfaces
 {

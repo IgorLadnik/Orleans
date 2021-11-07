@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Grains
 {
@@ -14,6 +10,6 @@ namespace Grains
 
         public static readonly Guid StreamId = Guid.Parse("CFAEFEAD-FB3C-4478-98CB-92900CDCE4E3");
 
-        internal const string StreamNamespace = "HaloStreamingNamespace";
+        public const string StreamNamespace = "HaloStreamingNamespace";
     }
 }

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Orleans;
-using GrainInterfaces;
 using Grains;
 using Data;
 using WebApplication1;
@@ -48,7 +44,7 @@ namespace WebAppOrleans1.Controllers
             var ss = locations.Split('-');
 
             var piece = await cgf.Game.Move(new PieceLocation(ss[0]), new PieceLocation(ss[1]));
-            await cgf.Consumer.BecomeConsumer(GrainIds.StreamId, Program.ProviderName);
+            await cgf.Consumer.BecomeConsumer(GrainIds.StreamId, Program.ProviderName, GrainIds.StreamNamespace);
 
             await cgf.Provider.SendEvent(new PieceEvent1 { Payload = "Sho?" });
 
