@@ -21,8 +21,8 @@ namespace Grains
         public IGameGrain Game =>
             _grainFactory.GetGrain<IGameGrain>(GrainIds.GameGrainId);
 
-        public IProducerEventCountingGrain Provider =>
-            _grainFactory.GetGrain<IProducerEventCountingGrain>(GrainIds.GameGrainId);
+        public IProducerGrain<IPieceEvent> Provider =>
+            _grainFactory.GetGrain<IProducerGrain<IPieceEvent>>(GrainIds.GameGrainId);
 
         public IConsumerGrain<IPieceEvent> Consumer =>
             _grainFactory.GetGrain<IConsumerGrain<IPieceEvent>>(GrainIds.GameGrainId);

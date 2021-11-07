@@ -2,7 +2,7 @@
 
 namespace Data
 {
-    public class PieceEvent1 : IPieceEvent
+    public class PieceEvent : IPieceEvent
     {
         public Guid Id { get; } = Guid.NewGuid();
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Orleans;
-using Orleans.Streams;
 using Orleans.Runtime;
 using Infrastructure;
 using GrainInterfaces;
@@ -9,7 +8,7 @@ using Data;
 
 namespace Grains
 {
-    public class PieceGrain : ConsumerGrain<IPieceEvent>, IPieceGrain, /*IConsumerEventCountingGrain,*/ IRemindable
+    public class PieceGrain : ConsumerGrain<IPieceEvent>, IPieceGrain, IRemindable
     {
         //private ILogger _logger;
 

@@ -9,7 +9,7 @@ namespace GrainInterfaces
 {
     public interface ITestGrain : IGrainWithGuidKey
     {
-        Task<int> Ga(int a);
+        Task<int> MuptiplyBy2(int a);
         Task<int> GetTestIntProp();
         Task SetTestIntProp(int n);
     }
