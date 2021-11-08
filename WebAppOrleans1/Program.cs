@@ -5,7 +5,7 @@ using Orleans.Hosting;
 using Orleans.Runtime;
 using GrainInterfaces;
 
-namespace WebApplication1
+namespace WebAppOrleans1
 {
     public class Program
     {
