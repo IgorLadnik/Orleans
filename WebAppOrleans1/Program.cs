@@ -4,7 +4,6 @@ using Orleans;
 using Orleans.Hosting;
 using Orleans.Runtime;
 using GrainInterfaces;
-using Data;
 
 namespace WebApplication1
 {
