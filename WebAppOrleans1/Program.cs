@@ -10,10 +10,8 @@ namespace WebAppOrleans1
         public const string StoreName = "PubSubStore"; // Reserved name for streaming!
         public const string ProviderName = "SMSProvider";
 
-        public static void Main(string[] args)
-        {
+        public static void Main(string[] args) =>
             CreateHostBuilder(args).Build().Run();
-        }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
