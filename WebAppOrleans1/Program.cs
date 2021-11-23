@@ -16,7 +16,6 @@ namespace WebAppOrleans1
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .UseOrleans((ctx, siloBuilder) =>
-                {
                     siloBuilder
                         .UseLocalhostClustering()
                         .UseInMemoryReminderService()
@@ -39,11 +38,8 @@ namespace WebAppOrleans1
                             if (context.Result is IPieceGrain piece)
                                 /*context.Result = */
                                 await piece.SetLocation(new("e8")); // :)
-                        });
-                })
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+                        })
+                )
+                .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>());
     }
 }
