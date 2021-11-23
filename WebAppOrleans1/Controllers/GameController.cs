@@ -1,9 +1,11 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Orleans;
 using Grains;
 using Data;
-using WebAppOrleans1;
+
+// Usage:
+// 1. https://localhost:5001/game/start
+// 2. https://localhost:5001/game/e2-e4
 
 namespace WebAppOrleans1.Controllers
 {
