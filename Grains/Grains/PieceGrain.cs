@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Runtime;
 using Infrastructure;
@@ -10,7 +11,12 @@ namespace Grains
 {
     public class PieceGrain : ConsumerGrain<IPieceEvent>, IPieceGrain, IRemindable
     {
-        //private ILogger _logger;
+        private ILogger<PieceGrain> _logger;
+
+        public PieceGrain(ILogger<PieceGrain> logger)
+        {
+            _logger = logger;
+        }
 
         #region Implementation of IPieceGrain
 
@@ -40,7 +46,7 @@ namespace Grains
 
         public override Task OnActivateAsync()
         {
-            //_logger.Info("Consumer.OnActivateAsync");
+            _logger.Info("***** Consumer.OnActivateAsync");
             
             // Reminder
             var grainReminder = RegisterOrUpdateReminder("game-reminder", TimeSpan.Zero, TimeSpan.FromMinutes(1)).Result;
@@ -50,7 +56,7 @@ namespace Grains
 
         public override async Task OnDeactivateAsync()
         {
-            //_logger.Info("Consumer.OnDeactivateAsync");
+            _logger.Info("***** Consumer.OnDeactivateAsync");
             
             await StopConsuming();
             await base.OnDeactivateAsync();
@@ -63,14 +69,14 @@ namespace Grains
 
         private Task EventArrived(IPieceEvent @event)
         {
-            //_logger.Info("Consumer.EventArrived. NumConsumed so far: " + _numConsumedItems);
+            _logger.Info($"***** Consumer.EventArrived. Id = {@event.Id}, Payload = {@event.Payload}");
             return Task.CompletedTask;
         }
 
         // Reminder
         public Task ReceiveReminder(string reminderName, TickStatus status)
         {
-            Console.WriteLine("Thanks for reminding me -- I almost forgot!");
+            _logger.Info("***** Thanks for reminding me -- I almost forgot!");
             return Task.CompletedTask;
         }
     }

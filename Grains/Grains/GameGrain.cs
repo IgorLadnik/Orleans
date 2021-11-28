@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Streams;
 using Data;
@@ -15,16 +17,18 @@ namespace Grains
         private IList<Guid> _pieceIds = new List<Guid>();
 
         private IGrainFactory _grainFactory;
-
+        private IConfiguration _configuration;
+        private ILogger<GameGrain> _logger;
         private IAsyncObserver<IPieceEvent> _producer;
+
         private int _numProducedItems;
-        //private ILogger _logger;
 
-        private bool _isAlreadyProducer = false;
-
-
-        public GameGrain(IGrainFactory grainFactory) =>
+        public GameGrain(IGrainFactory grainFactory, IConfiguration configuration, ILogger<GameGrain> logger) 
+        {
             _grainFactory = grainFactory;
+            _configuration = configuration;
+            _logger = logger;
+        }
 
         #region Implementation of IGrainGrain
 
@@ -39,6 +43,8 @@ namespace Grains
                 await piece.SetColor(PieceColor.White);
                 await piece.SetLocation(new PieceLocation("e2"));
                 _pieceIds.Add(piece.GetPrimaryKey());
+
+                _logger.LogInformation($"***** {piece}, {await piece.GetRank()}");
 
                 return piece != null;
             });

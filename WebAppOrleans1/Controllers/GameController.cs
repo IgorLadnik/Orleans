@@ -13,23 +13,29 @@ namespace WebAppOrleans1.Controllers
     [Controller]
     public class GameController : Controller
     {
-        private readonly ConcreteGrainFactory cgf;
+        private readonly ConcreteGrainFactory _cgf;
+        private readonly IConfiguration _configuration;
+        private readonly ILogger<Controller> _logger;
 
-        public GameController(IGrainFactory grainFactory) =>
-            cgf = new(grainFactory);
+        public GameController(IGrainFactory grainFactory, IConfiguration configuration, ILogger<Controller> logger) 
+        {
+            _cgf = new(grainFactory);
+            _configuration = configuration;
+            _logger = logger;
+        }
 
-        [HttpGet("start")]
+    [HttpGet("start")]
         public async Task<IActionResult> Start()
         {
-            var test = cgf.Test;
+            var test = _cgf.Test;
             await test.SetTestIntProp(7);
             var qa = await test.GetTestIntProp();
 
-            var br = await cgf.Game.Start();
-            await cgf.Provider.BecomeProducer(GrainIds.StreamId, Program.ProviderName, GrainIds.StreamNamespace);
+            var br = await _cgf.Game.Start();
+            await _cgf.Provider.BecomeProducer(GrainIds.StreamId, Program.ProviderName, GrainIds.StreamNamespace);
 
             // Device
-            await cgf.Device.Act(11);
+            await _cgf.Device.Act(11);
 
             return Json($"{br} {qa}");
         }
@@ -41,14 +47,14 @@ namespace WebAppOrleans1.Controllers
                 return Json(false);
 
             // Device
-            var deviceState = await cgf.Device.GetState();
+            var deviceState = await _cgf.Device.GetState();
 
             var ss = locations.Split('-');
 
-            var piece = await cgf.Game.Move(new PieceLocation(ss[0]), new PieceLocation(ss[1]));
-            await cgf.Consumer.BecomeConsumer(GrainIds.StreamId, Program.ProviderName, GrainIds.StreamNamespace);
+            var piece = await _cgf.Game.Move(new PieceLocation(ss[0]), new PieceLocation(ss[1]));
+            await _cgf.Consumer.BecomeConsumer(GrainIds.StreamId, Program.ProviderName, GrainIds.StreamNamespace);
 
-            await cgf.Provider.SendEvent(new PieceEvent { Payload = $"new location: {ss[1]}" });
+            await _cgf.Provider.SendEvent(new PieceEvent { Payload = $"new location: {ss[1]}" });
 
             return Json(piece != null 
                 ? $"{await piece.GetRank()}, {await piece.GetColor()}, {await piece.GetLocation()}"
