@@ -17,7 +17,7 @@ namespace Test1
         private IPieceGrain _pieceGrainMock;
 
         [SetUp]
-        public async Task Setup()
+        public void Setup()
         {
             _client = new(new WebApplicationFactory<WebAppOrleans1.Startup>().CreateClient());
 

@@ -19,9 +19,9 @@ namespace Grains
         private IGrainFactory _grainFactory;
         private IConfiguration _configuration;
         private ILogger<GameGrain> _logger;
-        private IAsyncObserver<IPieceEvent> _producer;
+        //private IAsyncObserver<IPieceEvent> _producer;
 
-        private int _numProducedItems;
+        //private int _numProducedItems;
 
         public GameGrain(IGrainFactory grainFactory, IConfiguration configuration, ILogger<GameGrain> logger) 
         {

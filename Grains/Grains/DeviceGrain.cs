@@ -12,12 +12,9 @@ namespace Grains
         //}
 
         public Task Act(int n) =>
-            Task.Run(() =>
-            {
-                var t = 0;
-                RaiseEvent(new DeviceEvent { Prop = n, TimeStamp = DateTime.UtcNow });
-            });
-
+            Task.Run(() => 
+                RaiseEvent(new DeviceEvent { Prop = n, TimeStamp = DateTime.UtcNow }));
+            
         public Task<int> GetState() => Task.Run(() => State.TheState);
 
         protected override void OnStateChanged()
